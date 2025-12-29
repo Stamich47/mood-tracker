@@ -60,10 +60,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="color-scheme" content="light dark" />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-50 dark:bg-zinc-950`}
+        suppressHydrationWarning
       >
+        <noscript>
+          <p>Please enable JavaScript to use this app.</p>
+        </noscript>
         <LayoutWrapper>
           <PageTransition>{children}</PageTransition>
         </LayoutWrapper>
