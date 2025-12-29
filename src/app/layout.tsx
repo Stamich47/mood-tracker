@@ -20,13 +20,38 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Mood Tracker",
+  },
+  icons: {
+    apple: [
+      {
+        url: "/icon.svg",
+        sizes: "180x180",
+        type: "image/svg+xml",
+      },
+    ],
+    icon: [
+      {
+        url: "/icon.svg",
+        sizes: "any",
+        type: "image/svg+xml",
+      },
+    ],
+  },
+  other: {
+    "apple-touch-icon": "/icon.svg",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#6366f1",
+  viewportFit: "cover",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
