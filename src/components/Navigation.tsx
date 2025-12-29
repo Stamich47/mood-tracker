@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Calendar,
@@ -14,6 +15,25 @@ import { createClient } from "@/utils/supabase/client";
 export default function Navigation() {
   const pathname = usePathname();
   const supabase = createClient();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, [supabase]);
+
+  // Don't render navigation on login/signup pages or if not authenticated
+  if (pathname === "/login" || !isAuthenticated || isLoading) {
+    return null;
+  }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -95,6 +115,16 @@ export default function Navigation() {
               Insights
             </span>
           </Link>
+          <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-800 mx-2" />
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 text-zinc-400 hover:text-red-500"
+          >
+            <LogOut size={16} strokeWidth={2} />
+            <span className="text-xs font-black uppercase tracking-widest">
+              Logout
+            </span>
+          </button>
         </div>
       </div>
 
@@ -115,7 +145,7 @@ export default function Navigation() {
           >
             <LayoutDashboard
               size={18}
-              strokeWidth={pathname === "/" ? 2.5 : 2}
+              strokeWidth={2}
             />
           </div>
           <span className="text-[7px] font-black uppercase tracking-widest">
@@ -136,7 +166,7 @@ export default function Navigation() {
               pathname === "/chart" ? "bg-brand-50 dark:bg-brand-900/30" : ""
             }`}
           >
-            <Calendar size={18} strokeWidth={pathname === "/chart" ? 2.5 : 2} />
+            <Calendar size={18} strokeWidth={2} />
           </div>
           <span className="text-[7px] font-black uppercase tracking-widest">
             History
@@ -158,7 +188,7 @@ export default function Navigation() {
           >
             <BarChart2
               size={18}
-              strokeWidth={pathname === "/insights" ? 2.5 : 2}
+              strokeWidth={2}
             />
           </div>
           <span className="text-[7px] font-black uppercase tracking-widest">
@@ -185,7 +215,7 @@ export default function Navigation() {
             <LogOut size={18} strokeWidth={2} />
           </div>
           <span className="text-[7px] font-black uppercase tracking-widest">
-            Exit
+            Logout
           </span>
         </button>
       </div>

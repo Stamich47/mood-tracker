@@ -91,9 +91,11 @@ export default function ChartPage() {
     }
 
     // Refetch logs after deletion
-    fetchLogs().then((data) => {
-      if (data) setLogs(data);
-    });
+    setTimeout(() => {
+      fetchLogs().then((data) => {
+        if (data) setLogs(data);
+      });
+    }, 100);
     setIsDetailPopupOpen(false);
     setIsDeleteConfirmOpen(false);
   };

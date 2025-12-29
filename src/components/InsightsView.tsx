@@ -86,6 +86,42 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
     return (sum / filteredData.length).toFixed(1);
   }, [filteredData]);
 
+  const exerciseStats = useMemo(() => {
+    const now = new Date();
+    const start = new Date();
+    let totalDaysInPeriod = 0;
+
+    if (view === "week") {
+      start.setDate(now.getDate() - 7 + offset * 7);
+      totalDaysInPeriod = 7;
+    } else if (view === "month") {
+      const monthDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+      totalDaysInPeriod = new Date(
+        monthDate.getFullYear(),
+        monthDate.getMonth() + 1,
+        0
+      ).getDate();
+    } else {
+      totalDaysInPeriod = 365;
+    }
+
+    if (filteredData.length === 0) {
+      return {
+        yes: 0,
+        no: 0,
+        unrecorded: totalDaysInPeriod,
+        percentage: 0,
+      };
+    }
+
+    const yesCount = filteredData.filter((d) => d.worked_out).length;
+    const noCount = filteredData.filter((d) => !d.worked_out).length;
+    const unrecordedCount = totalDaysInPeriod - filteredData.length;
+    const percentage = Math.round((yesCount / filteredData.length) * 100);
+
+    return { yes: yesCount, no: noCount, unrecorded: unrecordedCount, percentage };
+  }, [filteredData, view, offset]);
+
   const getPeriodLabel = useMemo(() => {
     const now = new Date();
     const start = new Date();
@@ -354,6 +390,49 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
                   />
                 </BarChart>
               </ResponsiveContainer>
+            </div>
+          </section>
+
+          {/* Exercise Activity */}
+          <section className="bg-white dark:bg-zinc-900 p-8 rounded-4xl shadow-lg border border-slate-100 dark:border-zinc-800">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-1.5 h-6 bg-emerald-500 rounded-full" />
+              <h2 className="text-xl font-black tracking-tight">
+                Exercise Activity
+              </h2>
+            </div>
+            <div className="h-64 w-full flex flex-col items-center justify-center">
+              <div className="flex items-center justify-center gap-8">
+                <div className="text-center">
+                  <div className="text-5xl font-black text-emerald-500 mb-2">
+                    {exerciseStats.percentage}%
+                  </div>
+                  <div className="text-sm font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                    Active Days
+                  </div>
+                </div>
+                <div className="w-px h-24 bg-zinc-200 dark:bg-zinc-800" />
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                    <span className="text-sm font-bold">
+                      Yes: {exerciseStats.yes}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                    <span className="text-sm font-bold">
+                      No: {exerciseStats.no}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700" />
+                    <span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">
+                      Unrecorded: {exerciseStats.unrecorded}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
         </div>
