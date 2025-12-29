@@ -84,11 +84,11 @@ export default function TrackerForm({
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5">
         <MoodSelector value={mood} onChange={setMood} />
 
-        <div className="grid grid-cols-2 gap-2 items-start">
+        <div className="flex flex-col gap-4">
           <WorkoutLogger
             workedOut={workedOut}
             exercises={exercises}
@@ -103,20 +103,20 @@ export default function TrackerForm({
         <div className="flex flex-col gap-2">
           <button
             onClick={() => setIsNotesOpen(!isNotesOpen)}
-            className="flex items-center justify-between p-3 bg-gradient-to-br from-zinc-50 to-zinc-50/50 dark:from-zinc-900/30 dark:to-zinc-900/10 border border-zinc-200 dark:border-zinc-800/50 rounded-2xl hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] transition-all shrink-0"
+            className="flex items-center justify-between p-3 rounded-3xl bg-linear-to-br from-zinc-50/80 to-zinc-100/60 dark:from-zinc-900/40 dark:to-zinc-800/30 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 shadow-[0_6px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_10px_32px_rgba(0,0,0,0.35)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50"
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-xl">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-linear-to-br from-amber-100/70 to-amber-200/60 dark:from-amber-900/40 dark:to-amber-800/30 rounded-2xl shadow-sm">
                 <StickyNote
                   size={16}
-                  className="text-zinc-600 dark:text-zinc-400"
+                  className="text-amber-600 dark:text-amber-400"
                 />
               </div>
-              <div className="text-left">
-                <h3 className="text-sm font-black tracking-tight text-zinc-900 dark:text-zinc-100">
+              <div className="flex flex-col">
+                <h3 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
                   Daily Notes
                 </h3>
-                <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                <p className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
                   {notes ? "Added" : "Optional"}
                 </p>
               </div>
@@ -146,7 +146,7 @@ export default function TrackerForm({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="How was your day?"
-                  className="w-full h-16 p-3 bg-white dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
+                  className="w-full h-16 p-3 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500/50 hover:border-zinc-300/70 dark:hover:border-zinc-600/70 transition-all resize-none"
                 />
               </motion.div>
             )}
@@ -158,12 +158,12 @@ export default function TrackerForm({
         whileTap={{ scale: 0.98 }}
         onClick={handleSave}
         disabled={isSaving || mood === null}
-        className={`w-full py-3.5 rounded-2xl font-black text-sm tracking-widest uppercase transition-all shrink-0 flex items-center justify-center gap-2 ${
+        className={`w-full py-3.5 rounded-2xl font-bold text-sm tracking-wide uppercase transition-all shrink-0 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500/50 ${
           showSuccess
-            ? "bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+            ? "bg-linear-to-r from-green-400 to-green-500 text-white shadow-[0_8px_24px_rgba(34,197,94,0.35)]"
             : isSaving || mood === null
-            ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
-            : "bg-brand-600 text-white hover:bg-brand-700 shadow-premium active:scale-[0.98]"
+            ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 cursor-not-allowed"
+            : "bg-linear-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 shadow-[0_8px_24px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_32px_rgba(99,102,241,0.4)] active:scale-[0.98]"
         }`}
       >
         {isSaving ? (

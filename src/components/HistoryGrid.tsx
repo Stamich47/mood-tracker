@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Log } from "@/types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface HistoryGridProps {
   logs: Log[];
@@ -10,11 +12,19 @@ interface HistoryGridProps {
 }
 
 const moodColors: Record<number, string> = {
-  1: "bg-zinc-950",
-  2: "bg-red-500",
-  3: "bg-yellow-400",
-  4: "bg-green-300",
-  5: "bg-green-500",
+  1: "bg-red-600",
+  2: "bg-orange-500",
+  3: "bg-yellow-500",
+  4: "bg-green-500",
+  5: "bg-green-600",
+};
+
+const moodLabels: Record<number, string> = {
+  1: "Awful",
+  2: "Bad",
+  3: "Okay",
+  4: "Good",
+  5: "Great",
 };
 
 export default function HistoryGrid({
@@ -23,25 +33,9 @@ export default function HistoryGrid({
   onDateSelect,
 }: HistoryGridProps) {
   const today = new Date();
-  const year = today.getFullYear();
-
-  // Generate all days for the current year
-  const daysInYear = [];
-  const end = new Date(year, 11, 31);
-
-  // Adjust start to the beginning of the week (Sunday) to align rows
-  const firstDayOfYear = new Date(year, 0, 1);
-  const startOffset = firstDayOfYear.getDay();
-  const calendarStart = new Date(firstDayOfYear);
-  calendarStart.setDate(calendarStart.getDate() - startOffset);
-
-  for (
-    let d = new Date(calendarStart);
-    d <= end || d.getDay() !== 0;
-    d.setDate(d.getDate() + 1)
-  ) {
-    daysInYear.push(new Date(d));
-  }
+  const currentYear = today.getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const year = selectedYear;
 
   const logsMap = new Map(logs.map((log) => [log.date, log]));
 
@@ -60,96 +54,177 @@ export default function HistoryGrid({
     "Dec",
   ];
 
-  const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+  // Adjust for leap year
+  if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
+    daysInMonth[1] = 29;
+  }
 
   return (
-    <div className="flex flex-col gap-6 p-8 bg-white dark:bg-zinc-900 rounded-4xl shadow-premium border border-slate-100 dark:border-zinc-800 overflow-hidden">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-black tracking-tight text-zinc-900 dark:text-white">
-          {year} Activity
-        </h3>
-        <div className="flex items-center gap-3 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+    <div className="flex flex-col gap-4 p-4 md:p-6 w-full h-full bg-white dark:bg-zinc-900 rounded-3xl md:rounded-4xl shadow-premium border border-slate-100 dark:border-zinc-800 overflow-hidden">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSelectedYear(selectedYear - 1)}
+            className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+            aria-label="Previous year"
+          >
+            <ChevronLeft className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          </button>
+          <h3 className="text-lg md:text-xl font-black tracking-tight text-zinc-900 dark:text-white min-w-20 text-center">
+            {year} Activity
+          </h3>
+          <button
+            onClick={() => setSelectedYear(selectedYear + 1)}
+            disabled={selectedYear >= currentYear}
+            className="p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
+            aria-label="Next year"
+          >
+            <ChevronRight className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          </button>
+        </div>
+
+        {/* Enhanced Legend */}
+        <div className="flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
           <span>Less</span>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((m) => (
-              <div
+              <motion.div
                 key={m}
-                className={`w-3 h-3 rounded-sm ${moodColors[m]} opacity-80`}
-              />
+                whileHover={{ scale: 1.15 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <div
+                  className={`w-3 h-3 rounded-sm ${moodColors[m]} opacity-80 shadow-sm`}
+                />
+              </motion.div>
             ))}
           </div>
           <span>More</span>
         </div>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
-        {/* Day Labels */}
-        <div className="grid grid-rows-7 gap-1.5 pt-6 shrink-0">
-          {dayLabels.map((label, i) => (
-            <span
-              key={label}
-              className="text-[9px] font-bold text-zinc-400 h-3 flex items-center uppercase"
-            >
-              {i % 2 === 1 ? label : ""}
-            </span>
-          ))}
-        </div>
+      {/* Grid Container */}
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+        {/* Scrollable container - both labels and grid scroll together */}
+        <div className="flex flex-col flex-1 min-h-0 overflow-y-auto overflow-x-auto">
+          {/* Month Labels Row - using grid to match column widths */}
+          <div className="flex gap-1 mb-2 shrink-0 sticky top-0 bg-white dark:bg-zinc-900 z-20">
+            {/* Placeholder for day labels column */}
+            <div className="w-10 md:w-12 shrink-0 pr-2 md:pr-3 mr-1" />
 
-        <div className="flex flex-col gap-1.5 relative">
-          {/* Month Labels */}
-          <div className="flex gap-1.5 h-5">
-            {months.map((month, i) => {
-              const monthStart = new Date(year, i, 1);
-              const weekIndex = Math.floor(
-                (monthStart.getTime() - calendarStart.getTime()) /
-                  (7 * 24 * 60 * 60 * 1000)
-              );
-              return (
-                <span
+            {/* Month labels - each gets exact width of grid column via grid-template-columns */}
+            <div
+              className="flex gap-1 flex-1"
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(12, minmax(35px, 1fr))`,
+                gap: "0.25rem",
+              }}
+            >
+              {months.map((month) => (
+                <div
                   key={month}
-                  className="absolute text-[9px] font-bold text-zinc-400 uppercase"
-                  style={{ left: `${weekIndex * 18}px` }}
+                  className="h-6 flex items-center justify-center text-center text-[9px] md:text-[10px] font-bold text-zinc-400 uppercase"
                 >
                   {month}
-                </span>
-              );
-            })}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* The Grid */}
-          <div className="grid grid-flow-col grid-rows-7 gap-1.5">
-            {daysInYear.map((dateObj) => {
-              const date = dateObj.toISOString().split("T")[0];
-              const isCurrentYear = dateObj.getFullYear() === year;
-              const log = logsMap.get(date);
-              const isSelected = selectedDate === date;
-              const isToday = new Date().toISOString().split("T")[0] === date;
-              const isFuture = dateObj > today;
+          {/* Day Labels Column + Grid */}
+          <div className="flex gap-1">
+            {/* Day Labels Column */}
+            <div className="flex flex-col gap-1 shrink-0 pr-2 md:pr-3 w-10 md:w-12 mr-1 sticky left-0 z-10 bg-white dark:bg-zinc-900">
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                <div
+                  key={day}
+                  className="h-8 md:h-9 flex items-center justify-center text-[10px] md:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 shrink-0"
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
 
-              return (
-                <button
-                  key={date}
-                  disabled={!isCurrentYear || isFuture}
-                  onClick={() => onDateSelect(date)}
-                  className={`w-3 h-3 rounded-sm transition-all duration-200 ${
-                    !isCurrentYear
-                      ? "opacity-0 pointer-events-none"
-                      : log
-                      ? moodColors[log.mood]
-                      : "bg-zinc-100 dark:bg-zinc-800"
-                  } ${
-                    isSelected
-                      ? "ring-2 ring-brand-500 ring-offset-2 dark:ring-offset-zinc-900 scale-125 z-10"
-                      : "hover:scale-110"
-                  } ${isToday ? "border-2 border-brand-500" : ""} ${
-                    isFuture
-                      ? "opacity-20 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                  title={`${date}: Mood ${log?.mood ?? "N/A"}`}
-                />
-              );
-            })}
+            {/* Grid */}
+            <div
+              className="flex-1 pb-1"
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(12, minmax(35px, 1fr))`,
+                gap: "0.25rem",
+              }}
+            >
+              {months.map((month, monthIndex) => (
+                <div
+                  key={month}
+                  className="flex flex-col gap-1 items-center"
+                  style={{ gap: "0.25rem" }}
+                >
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
+                    const isValidDay = day <= daysInMonth[monthIndex];
+                    const dateStr = `${year}-${String(monthIndex + 1).padStart(
+                      2,
+                      "0"
+                    )}-${String(day).padStart(2, "0")}`;
+                    const log = logsMap.get(dateStr);
+                    const isSelected = selectedDate === dateStr;
+                    const dateObj = new Date(year, monthIndex, day); // Local timezone
+                    const isFuture = dateObj > today;
+                    const isCurrentYear = dateObj.getFullYear() === year;
+
+                    return (
+                      <motion.button
+                        key={`${month}-${day}`}
+                        disabled={!isValidDay || !isCurrentYear || isFuture}
+                        onClick={() => isValidDay && onDateSelect(dateStr)}
+                        whileHover={
+                          isValidDay && isCurrentYear && !isFuture
+                            ? { scale: 1.08 }
+                            : undefined
+                        }
+                        whileTap={
+                          isValidDay && isCurrentYear && !isFuture
+                            ? { scale: 0.95 }
+                            : undefined
+                        }
+                        className={`w-8 md:w-9 h-8 md:h-9 shrink-0 rounded-lg transition-all duration-200 relative flex items-center justify-center ${
+                          !isValidDay
+                            ? "invisible"
+                            : log
+                            ? `${
+                                moodColors[log.mood]
+                              } shadow-[0_2px_6px_rgba(0,0,0,0.15)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.3)]`
+                            : "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
+                        } ${
+                          isSelected
+                            ? "ring-2 ring-brand-500 ring-offset-1 dark:ring-offset-zinc-900 z-10"
+                            : ""
+                        } ${
+                          isFuture || !isCurrentYear || !isValidDay
+                            ? "opacity-35 cursor-not-allowed"
+                            : "cursor-pointer hover:shadow-[0_4px_10px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)]"
+                        } group`}
+                        title={
+                          isValidDay
+                            ? `${dateStr}: ${
+                                log ? moodLabels[log.mood] : "No data"
+                              }`
+                            : ""
+                        }
+                      >
+                        <span className="absolute text-[10px] md:text-[12px] font-bold text-white opacity-0 group-hover:opacity-40 transition-opacity duration-200">
+                          {day}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

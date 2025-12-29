@@ -29,3 +29,7 @@ create policy "Users can insert their own logs"
 create policy "Users can update their own logs"
   on public.daily_logs for update
   using ( auth.uid() = user_id );
+
+create policy "Users can delete their own logs"
+  on public.daily_logs for delete
+  using ( auth.uid() = user_id );
