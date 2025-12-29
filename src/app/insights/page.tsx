@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import Dashboard from "@/components/Dashboard";
+import InsightsView from "@/components/InsightsView";
 
-export default async function Home() {
+export default async function InsightsPage() {
   const supabase = await createClient();
 
   const {
@@ -13,14 +13,12 @@ export default async function Home() {
     return redirect("/login");
   }
 
-  const year = new Date().getFullYear();
-
+  // Fetch all logs for the user to allow historical insights
   const { data: logs } = await supabase
     .from("daily_logs")
     .select("*")
     .eq("user_id", user.id)
-    .gte("date", `${year}-01-01`)
-    .lte("date", `${year}-12-31`);
+    .order("date", { ascending: true });
 
-  return <Dashboard initialLogs={logs || []} />;
+  return <InsightsView logs={logs || []} />;
 }
