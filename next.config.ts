@@ -6,7 +6,6 @@ const withPWA = withPWAInit({
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
-  swcMinify: true,
   fallbacks: {
     document: "/offline.html",
   },
@@ -15,6 +14,7 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   turbopack: {},
   compress: true,
+  swcMinify: true,
 };
 
 export default withPWA(nextConfig);
