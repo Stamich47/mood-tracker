@@ -7,9 +7,6 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   /* config options here */
-  turbopack: {
-    root: "C:/Users/stanf/Documents/coding/repos/mood-tracker",
-  },
 };
 
 export default withPWA(nextConfig);
