@@ -14,7 +14,6 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   turbopack: {},
   compress: true,
-  swcMinify: true,
 };
 
 export default withPWA(nextConfig);
