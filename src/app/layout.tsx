@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navigation from "@/components/Navigation";
+import LayoutWrapper from "@/components/LayoutWrapper";
 import PageTransition from "@/components/PageTransition";
 
 const geistSans = Geist({
@@ -39,8 +39,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <PageTransition>{children}</PageTransition>
-        <Navigation />
+        <LayoutWrapper>
+          <PageTransition>{children}</PageTransition>
+        </LayoutWrapper>
       </body>
     </html>
   );

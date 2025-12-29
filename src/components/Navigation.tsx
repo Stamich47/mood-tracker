@@ -9,11 +9,16 @@ import {
   BarChart2,
   LogOut,
   Settings,
+  ChevronLeft,
+  ChevronRight,
+  Smile,
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { useInsights } from "@/contexts/InsightsContext";
 
 export default function Navigation() {
   const pathname = usePathname();
+  const insightsControls = useInsights();
   const supabase = createClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,21 +59,75 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed bottom-4 md:bottom-auto md:top-0 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-[calc(100%-2rem)] md:w-full max-w-lg md:max-w-none bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/20 dark:border-zinc-800/50 md:border-b px-2 md:px-6 py-2 md:py-4 z-40 rounded-2xl md:rounded-none shadow-premium md:shadow-none">
+    <nav className="fixed bottom-4 md:bottom-auto md:top-0 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-[calc(100%-2rem)] md:w-full max-w-lg md:max-w-none bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/20 dark:border-zinc-800/50 md:border-b px-2 md:px-6 py-2 md:py-4 z-40 rounded-2xl md:rounded-none shadow-premium md:shadow-none md:overflow-visible">
       {/* Desktop Header */}
-      <div className="hidden md:flex justify-between items-center mb-0">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
-            {getPageTitle()}
-          </h1>
-          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mt-1">
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
+      <div className="hidden md:flex justify-between items-center mb-0 overflow-visible gap-8">
+        <div className="flex items-center gap-8 flex-1">
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
+              {getPageTitle()}
+            </h1>
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mt-1">
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
         </div>
+
+        {/* Insights Controls - shows only on insights page */}
+        {pathname === "/insights" && insightsControls && (
+          <div className="flex items-center gap-4">
+            {/* View Toggle */}
+            <div className="flex bg-zinc-100 dark:bg-zinc-800 rounded-2xl p-1 shadow-inner">
+              {(["week", "month", "year"] as const).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => insightsControls.onViewChange(v)}
+                  className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all tracking-widest flex-1 ${
+                    insightsControls.view === v
+                      ? "bg-white dark:bg-zinc-700 shadow-premium text-brand-600 dark:text-brand-400"
+                      : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  }`}
+                >
+                  {v.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            {/* Date Navigation */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  insightsControls.onOffsetChange(insightsControls.offset - 1)
+                }
+                className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shrink-0"
+              >
+                <ChevronLeft
+                  size={14}
+                  className="text-zinc-600 dark:text-zinc-400"
+                />
+              </button>
+              <span className="font-black text-xs tracking-widest flex-1 text-center uppercase text-zinc-500 min-w-50">
+                {insightsControls.getPeriodLabel}
+              </span>
+              <button
+                onClick={() =>
+                  insightsControls.onOffsetChange(insightsControls.offset + 1)
+                }
+                className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shrink-0"
+              >
+                <ChevronRight
+                  size={14}
+                  className="text-zinc-600 dark:text-zinc-400"
+                />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center gap-1">
           <Link
             href="/"
@@ -78,10 +137,7 @@ export default function Navigation() {
                 : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
             }`}
           >
-            <LayoutDashboard
-              size={16}
-              strokeWidth={pathname === "/" ? 2.5 : 2}
-            />
+            <Smile size={16} strokeWidth={pathname === "/" ? 2.5 : 2} />
             <span className="text-xs font-black uppercase tracking-widest">
               Tracker
             </span>
@@ -143,10 +199,7 @@ export default function Navigation() {
               pathname === "/" ? "bg-brand-50 dark:bg-brand-900/30" : ""
             }`}
           >
-            <LayoutDashboard
-              size={18}
-              strokeWidth={2}
-            />
+            <LayoutDashboard size={18} strokeWidth={2} />
           </div>
           <span className="text-[7px] font-black uppercase tracking-widest">
             Tracker
@@ -186,10 +239,7 @@ export default function Navigation() {
               pathname === "/insights" ? "bg-brand-50 dark:bg-brand-900/30" : ""
             }`}
           >
-            <BarChart2
-              size={18}
-              strokeWidth={2}
-            />
+            <BarChart2 size={18} strokeWidth={2} />
           </div>
           <span className="text-[7px] font-black uppercase tracking-widest">
             Insights
