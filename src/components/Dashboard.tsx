@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import TrackerForm from "./TrackerForm";
-import Navigation from "./Navigation";
 import DateNavigator from "./DateNavigator";
 import { createClient } from "@/utils/supabase/client";
 import { Log } from "@/types";
@@ -106,11 +105,11 @@ export default function Dashboard({ initialLogs }: { initialLogs: Log[] }) {
           {/* Desktop: Tracker with side arrows (arrows are fixed positioned) */}
           <div className="hidden lg:flex lg:items-center lg:justify-center lg:gap-8">
             {/* Entry Section - Enhanced with glassmorphism */}
-            <section className="w-full max-w-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm p-5 md:p-8 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-white/20 dark:border-zinc-800/50 flex flex-col overflow-hidden hover:shadow-[0_12px_48px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_12px_48px_rgba(0,0,0,0.4)] transition-shadow duration-300">
-              <div className="flex flex-col gap-1 mb-4 md:mb-6 shrink-0">
+            <section className="w-full max-w-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm p-5 lg:p-8 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-white/20 dark:border-zinc-800/50 flex flex-col overflow-hidden hover:shadow-[0_12px_48px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_12px_48px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+              <div className="flex flex-col gap-1 mb-4 lg:mb-6 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-1.5 h-6 bg-linear-to-b from-brand-400 to-brand-600 rounded-full shadow-[0_0_16px_rgba(99,102,241,0.6)]" />
-                  <h2 className="text-lg md:text-xl font-black tracking-tight">
+                  <h2 className="text-lg lg:text-xl font-black tracking-tight">
                     Tracker
                   </h2>
                 </div>
@@ -140,8 +139,8 @@ export default function Dashboard({ initialLogs }: { initialLogs: Log[] }) {
           </div>
 
           {/* Mobile: Entry Section */}
-          <section className="lg:hidden w-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm p-5 md:p-8 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-white/20 dark:border-zinc-800/50 flex flex-col overflow-hidden hover:shadow-[0_12px_48px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_12px_48px_rgba(0,0,0,0.4)] transition-shadow duration-300">
-            <div className="flex items-center gap-3 mb-4 md:mb-6 shrink-0">
+          <section className="lg:hidden w-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm p-5 lg:p-8 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-white/20 dark:border-zinc-800/50 flex flex-col overflow-hidden hover:shadow-[0_12px_48px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_12px_48px_rgba(0,0,0,0.4)] transition-shadow duration-300">
+            <div className="flex items-center gap-3 mb-4 lg:mb-6 shrink-0">
               <div className="w-1.5 h-6 bg-linear-to-b from-brand-400 to-brand-600 rounded-full shadow-[0_0_16px_rgba(99,102,241,0.6)]" />
               <h2 className="text-lg md:text-xl font-black tracking-tight">
                 Tracker

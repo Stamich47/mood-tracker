@@ -60,15 +60,30 @@ export default function WorkoutLogger({
           onClick={() => onToggleWorkout(!workedOut)}
           className="relative inline-flex h-8 md:h-10 w-20 md:w-24 items-center rounded-lg bg-zinc-200/80 dark:bg-zinc-800/80 backdrop-blur-sm border border-zinc-300/50 dark:border-zinc-700/50 p-1 hover:border-zinc-400/60 dark:hover:border-zinc-600/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 transition-all duration-200 shrink-0"
         >
-          {/* Sliding button */}
+          {/* Mobile Sliding button */}
           <motion.span
-            animate={{ x: workedOut ? 40 : 0 }}
+            animate={{ x: workedOut ? "calc(100% + 6px)" : 0 }}
             transition={{
               type: "spring",
               stiffness: 250,
               damping: 25,
             }}
-            className={`absolute left-1 h-6 md:h-8 w-8 md:w-10 rounded-lg shadow-md transition-colors duration-300 ${
+            className={`lg:hidden absolute left-1 h-6 md:h-8 w-8 md:w-10 rounded-lg shadow-md transition-colors duration-300 ${
+              workedOut
+                ? "bg-linear-to-br from-green-400 to-green-500"
+                : "bg-white dark:bg-zinc-100"
+            }`}
+          />
+
+          {/* Desktop Sliding button */}
+          <motion.span
+            animate={{ x: workedOut ? "calc(100% + 8px)" : 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 250,
+              damping: 25,
+            }}
+            className={`hidden lg:block absolute left-1 h-6 md:h-8 w-8 md:w-10 rounded-lg shadow-md transition-colors duration-300 ${
               workedOut
                 ? "bg-linear-to-br from-green-400 to-green-500"
                 : "bg-white dark:bg-zinc-100"
