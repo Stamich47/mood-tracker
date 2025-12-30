@@ -24,15 +24,21 @@ interface TrackerFormProps {
     notes?: string;
   };
   onSaveSuccess?: () => void;
+  onPreviousDay?: () => void;
+  onNextDay?: () => void;
 }
 
 export default function TrackerForm({
   date,
   initialData,
   onSaveSuccess,
+  onPreviousDay,
+  onNextDay,
 }: TrackerFormProps) {
   const [mood, setMood] = useState<number | null>(initialData?.mood ?? null);
   const [workedOut, setWorkedOut] = useState(initialData?.worked_out ?? false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [exercises, setExercises] = useState<string[]>(
     initialData?.exercises ?? []
   );
@@ -42,6 +48,30 @@ export default function TrackerForm({
   const [showSuccess, setShowSuccess] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const supabase = createClient();
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    setTouchEnd(e.changedTouches[0].clientX);
+    handleSwipe();
+  };
+
+  const handleSwipe = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && onNextDay) {
+      onNextDay();
+    }
+    if (isRightSwipe && onPreviousDay) {
+      onPreviousDay();
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -84,7 +114,11 @@ export default function TrackerForm({
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div
+      className="flex flex-col gap-5 touch-pan-y select-none"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex flex-col gap-5">
         <MoodSelector value={mood} onChange={setMood} />
 
@@ -106,7 +140,7 @@ export default function TrackerForm({
             className="flex items-center justify-between p-4 md:p-5 rounded-3xl bg-linear-to-br from-zinc-50/80 to-zinc-100/60 dark:from-zinc-900/40 dark:to-zinc-800/30 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 shadow-[0_6px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_10px_32px_rgba(0,0,0,0.35)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50"
           >
             <div className="flex items-center gap-3 md:gap-4 min-w-0">
-              <div className="p-2 md:p-3 bg-linear-to-br from-amber-100/70 to-amber-200/60 dark:from-amber-900/40 dark:to-amber-800/30 rounded-2xl shadow-sm flex-shrink-0">
+              <div className="p-2 md:p-3 bg-linear-to-br from-amber-100/70 to-amber-200/60 dark:from-amber-900/40 dark:to-amber-800/30 rounded-2xl shadow-sm shrink-0">
                 <StickyNote
                   size={18}
                   className="md:w-5 md:h-5 text-amber-600 dark:text-amber-400"
@@ -124,12 +158,12 @@ export default function TrackerForm({
             {isNotesOpen ? (
               <ChevronUp
                 size={18}
-                className="text-zinc-500 dark:text-zinc-400 flex-shrink-0"
+                className="text-zinc-500 dark:text-zinc-400 shrink-0"
               />
             ) : (
               <ChevronDown
                 size={18}
-                className="text-zinc-500 dark:text-zinc-400 flex-shrink-0"
+                className="text-zinc-500 dark:text-zinc-400 shrink-0"
               />
             )}
           </button>

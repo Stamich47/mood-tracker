@@ -18,7 +18,7 @@ export default function DrinkCounter({ count, onChange }: DrinkCounterProps) {
       className="flex items-center justify-between p-4 md:p-5 rounded-3xl bg-linear-to-br from-zinc-50/80 to-zinc-100/60 dark:from-zinc-900/40 dark:to-zinc-800/30 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 shadow-[0_6px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_10px_32px_rgba(0,0,0,0.35)] transition-all duration-300"
     >
       <div className="flex items-center gap-3 md:gap-4 min-w-0">
-        <div className="p-2 md:p-3 bg-linear-to-br from-amber-100/70 to-amber-200/60 dark:from-amber-900/40 dark:to-amber-800/30 rounded-2xl shadow-sm flex-shrink-0">
+        <div className="p-2 md:p-3 bg-linear-to-br from-amber-100/70 to-amber-200/60 dark:from-amber-900/40 dark:to-amber-800/30 rounded-2xl shadow-sm shrink-0">
           <Beer
             size={18}
             className="md:w-5 md:h-5 text-amber-600 dark:text-amber-400"
@@ -34,7 +34,7 @@ export default function DrinkCounter({ count, onChange }: DrinkCounterProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => onChange(Math.max(0, count - 1))}
