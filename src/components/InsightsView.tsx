@@ -187,9 +187,9 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
   }, [filteredData, view, offset]);
 
   return (
-    <div className="h-dvh flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 overflow-hidden md:pt-24">
+    <div className="h-dvh flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 overflow-hidden lg:pt-24">
       {/* Mobile Header */}
-      <header className="md:hidden p-4 flex items-center justify-between bg-white dark:bg-zinc-900/80 border-b border-slate-100 dark:border-zinc-800 shrink-0">
+      <header className="lg:hidden p-4 flex items-center justify-between bg-white dark:bg-zinc-900/80 border-b border-slate-100 dark:border-zinc-800 shrink-0">
         <h1 className="text-xl font-black tracking-tight text-zinc-900 dark:text-white">
           Insights
         </h1>
@@ -211,7 +211,7 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setFilterOpen(false)}
-              className="md:hidden fixed inset-0 bg-black/40 z-30 top-0"
+              className="lg:hidden fixed inset-0 bg-black/40 z-30 top-0"
             />
             {/* Modal */}
             <motion.div
@@ -219,7 +219,7 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 rounded-t-3xl p-6 z-30 shadow-2xl max-h-[80vh] overflow-y-auto"
+              className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 rounded-t-3xl p-6 z-30 shadow-2xl max-h-[80vh] overflow-y-auto"
             >
               <div className="flex flex-col gap-6">
                 {/* Handle Bar */}
@@ -305,7 +305,7 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
       {/* Desktop Controls Section - HIDDEN */}
       {/* Controls now integrated into navbar */}
 
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 md:space-y-8 scrollbar-hide pb-20 md:pb-8">
+      <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-4 lg:space-y-8 scrollbar-hide pb-20 lg:pb-8">
         {/* Mood Trend - Full Width */}
         <section className="bg-white dark:bg-zinc-900 p-4 md:p-8 rounded-4xl shadow-lg border border-slate-200 dark:border-zinc-800">
           <div className="flex items-center justify-between gap-3 mb-8">

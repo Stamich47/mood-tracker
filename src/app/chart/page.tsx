@@ -112,9 +112,9 @@ export default function ChartPage() {
 
   return (
     <main className="h-dvh bg-zinc-50 dark:bg-zinc-950 overflow-hidden flex flex-col">
-      <div className="w-full px-4 md:px-6 py-4 md:pt-24 md:pb-6 flex-1 flex flex-col min-h-0 pb-24">
+      <div className="w-full px-4 lg:px-6 py-4 lg:pt-24 lg:pb-6 flex-1 flex flex-col min-h-0 pb-24">
         {/* Mobile Header */}
-        <header className="mb-4 md:mb-0 md:hidden shrink-0">
+        <header className="mb-4 lg:mb-0 lg:hidden shrink-0">
           <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-0.5">
             Analytics
           </p>

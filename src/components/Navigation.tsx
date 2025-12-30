@@ -59,9 +59,9 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed bottom-4 md:bottom-auto md:top-0 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-[calc(100%-2rem)] md:w-full max-w-lg md:max-w-none bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/20 dark:border-zinc-800/50 md:border-b px-2 md:px-6 py-2 md:py-4 z-40 rounded-2xl md:rounded-none shadow-premium md:shadow-none md:overflow-visible">
+    <nav className="fixed bottom-4 lg:bottom-auto lg:top-0 left-1/2 lg:left-0 -translate-x-1/2 lg:translate-x-0 w-[calc(100%-2rem)] lg:w-full max-w-lg lg:max-w-none bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/20 dark:border-zinc-800/50 lg:border-b px-2 lg:px-6 py-2 lg:py-4 z-40 rounded-2xl lg:rounded-none shadow-premium lg:shadow-none lg:overflow-visible">
       {/* Desktop Header */}
-      <div className="hidden md:flex justify-between items-center mb-0 overflow-visible gap-8">
+      <div className="hidden lg:flex justify-between items-center mb-0 overflow-visible gap-8">
         <div className="flex items-center gap-8 flex-1">
           <div>
             <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
@@ -185,7 +185,7 @@ export default function Navigation() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="flex md:hidden justify-between items-center gap-0.5">
+      <div className="flex lg:hidden justify-between items-center gap-0.5">
         <Link
           href="/"
           className={`flex flex-col items-center gap-0.5 transition-all duration-300 flex-1 ${
