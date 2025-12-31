@@ -140,10 +140,10 @@ export default function TrackerForm({
             className="flex items-center justify-between p-4 md:p-5 rounded-3xl bg-linear-to-br from-zinc-50/80 to-zinc-100/60 dark:from-zinc-900/40 dark:to-zinc-800/30 backdrop-blur-sm border border-zinc-200/50 dark:border-zinc-700/50 shadow-[0_6px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_32px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_10px_32px_rgba(0,0,0,0.35)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50"
           >
             <div className="flex items-center gap-3 md:gap-4 min-w-0">
-              <div className="p-2 md:p-3 bg-linear-to-br from-amber-100/70 to-amber-200/60 dark:from-amber-900/40 dark:to-amber-800/30 rounded-2xl shadow-sm shrink-0">
+              <div className="p-2 md:p-3 bg-linear-to-br from-cyan-100/70 to-cyan-200/60 dark:from-cyan-900/40 dark:to-cyan-800/30 rounded-2xl shadow-sm shrink-0">
                 <StickyNote
                   size={18}
-                  className="md:w-5 md:h-5 text-amber-600 dark:text-amber-400"
+                  className="md:w-5 md:h-5 text-cyan-600 dark:text-cyan-400"
                 />
               </div>
               <div className="flex flex-col min-w-0">

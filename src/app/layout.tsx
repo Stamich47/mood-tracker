@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import PageTransition from "@/components/PageTransition";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,9 +73,11 @@ export default function RootLayout({
         <noscript>
           <p>Please enable JavaScript to use this app.</p>
         </noscript>
-        <LayoutWrapper>
-          <PageTransition>{children}</PageTransition>
-        </LayoutWrapper>
+        <ThemeProvider>
+          <LayoutWrapper>
+            <PageTransition>{children}</PageTransition>
+          </LayoutWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

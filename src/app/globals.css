@@ -1,15 +1,12 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Light mode is the default, so we don't need a custom variant for it */
+/* The base styles apply when .dark class is not present */
+
+@theme {
+  --breakpoint-lg: 1024px;
 
   /* Custom Design System */
   --radius-4xl: 2rem;
@@ -29,11 +26,24 @@
   --color-zinc-950: #09090b;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f1115;
-    --foreground: #fafafa;
-  }
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+  --background: #0f1115;
+  --foreground: #fafafa;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {

@@ -2,13 +2,16 @@
 
 import { ReactNode } from "react";
 import { InsightsProvider } from "@/contexts/InsightsContext";
+import { ChartProvider } from "@/contexts/ChartContext";
 import Navigation from "./Navigation";
 
 export default function LayoutWrapper({ children }: { children: ReactNode }) {
   return (
-    <InsightsProvider>
-      <Navigation />
-      {children}
-    </InsightsProvider>
+    <ChartProvider>
+      <InsightsProvider>
+        <Navigation />
+        {children}
+      </InsightsProvider>
+    </ChartProvider>
   );
 }

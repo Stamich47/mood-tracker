@@ -3,9 +3,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import HistoryGrid from "@/components/HistoryGrid";
+import MobileHistoryGrid from "@/components/MobileHistoryGrid";
+import ActivitiesGrid from "@/components/ActivitiesGrid";
+import DesktopCalendarView from "@/components/DesktopCalendarView";
 import Navigation from "@/components/Navigation";
 import Modal from "@/components/Modal";
 import TrackerForm from "@/components/TrackerForm";
+import { useSetChart } from "@/contexts/ChartContext";
 import type { Log } from "../../types";
 import { format, parseISO } from "date-fns";
 import { Beer, Dumbbell, Smile, Edit2, Trash2 } from "lucide-react";
@@ -36,6 +40,12 @@ export default function ChartPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailPopupOpen, setIsDetailPopupOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [mobileView, setMobileView] = useState<"mood" | "workout" | "alcohol">(
+    "mood"
+  );
+  const [mobileMode, setMobileMode] = useState<"month" | "year">("month");
+  const [chartView, setChartView] = useState<"grid" | "calendar">("grid");
+  const setChartControls = useSetChart();
   const supabase = createClient();
 
   const fetchLogs = useCallback(async () => {
@@ -59,6 +69,22 @@ export default function ChartPage() {
       setLoading(false);
     });
   }, [fetchLogs]);
+
+  // Update context with current state
+  useEffect(() => {
+    if (setChartControls) {
+      setChartControls({
+        view: mobileView,
+        chartView: chartView,
+        onViewChange: (v: "mood" | "workout" | "alcohol") => {
+          setMobileView(v);
+        },
+        onChartViewChange: (v: "grid" | "calendar") => {
+          setChartView(v);
+        },
+      });
+    }
+  }, [mobileView, chartView, setChartControls]);
 
   const handleEditModalClose = () => {
     setIsEditModalOpen(false);
@@ -111,7 +137,7 @@ export default function ChartPage() {
   }
 
   return (
-    <main className="h-dvh bg-zinc-50 dark:bg-zinc-950 overflow-hidden flex flex-col">
+    <main className="h-dvh bg-white dark:bg-zinc-950 overflow-hidden flex flex-col">
       <div className="w-full px-4 lg:px-6 py-4 lg:pt-24 lg:pb-6 flex-1 flex flex-col min-h-0 pb-24">
         {/* Mobile Header */}
         <header className="mb-4 lg:mb-0 lg:hidden shrink-0">
@@ -123,12 +149,148 @@ export default function ChartPage() {
           </h1>
         </header>
 
-        <div className="flex-1 min-h-0 flex flex-col">
-          <HistoryGrid
-            logs={logs}
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-          />
+        {/* Mobile Controls: metric icons + mode toggle */}
+        <div className="lg:hidden mb-4 shrink-0 w-full px-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1 shadow-inner">
+              <button
+                onClick={() => setMobileView("mood")}
+                className={`p-2 rounded-md transition-all ${
+                  mobileView === "mood"
+                    ? "bg-white dark:bg-zinc-700 shadow-premium text-brand-600 dark:text-brand-400"
+                    : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                }`}
+                aria-label="Mood"
+                title="Mood"
+              >
+                <Smile size={14} />
+              </button>
+              <button
+                onClick={() => setMobileView("workout")}
+                className={`p-2 rounded-md transition-all ${
+                  mobileView === "workout"
+                    ? "bg-white dark:bg-zinc-700 shadow-premium text-brand-600 dark:text-brand-400"
+                    : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                }`}
+                aria-label="Workout"
+                title="Workout"
+              >
+                <Dumbbell size={14} />
+              </button>
+              <button
+                onClick={() => setMobileView("alcohol")}
+                className={`p-2 rounded-md transition-all ${
+                  mobileView === "alcohol"
+                    ? "bg-white dark:bg-zinc-700 shadow-premium text-brand-600 dark:text-brand-400"
+                    : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                }`}
+                aria-label="Alcohol"
+                title="Alcohol"
+              >
+                <Beer size={14} />
+              </button>
+            </div>
+
+            {/* Monthly/Yearly Toggle */}
+            <div className="flex bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1 shadow-inner">
+              <button
+                onClick={() => setMobileMode("month")}
+                className={`px-3 py-1 rounded-md text-[10px] font-black ${
+                  mobileMode === "month"
+                    ? "bg-white dark:bg-zinc-700 shadow-premium text-zinc-900 dark:text-white"
+                    : "text-zinc-400"
+                }`}
+                aria-label="Monthly view"
+                title="Monthly view"
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setMobileMode("year")}
+                className={`px-3 py-1 rounded-md text-[10px] font-black ${
+                  mobileMode === "year"
+                    ? "bg-white dark:bg-zinc-700 shadow-premium text-zinc-900 dark:text-white"
+                    : "text-zinc-400"
+                }`}
+                aria-label="Yearly view"
+                title="Yearly view"
+              >
+                Yearly
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Single Chart Display */}
+        <div className="flex min-h-0 flex-1 flex-col w-full lg:w-full mx-auto px-2 lg:px-0 overflow-hidden">
+          {mobileView === "mood" && (
+            <>
+              {/* Desktop view */}
+              <div className="hidden lg:flex lg:h-full lg:flex-1">
+                <div className="flex-1 min-h-0">
+                  {chartView === "grid" ? (
+                    <HistoryGrid
+                      logs={logs}
+                      selectedDate={selectedDate}
+                      onDateSelect={handleDateSelect}
+                    />
+                  ) : (
+                    <DesktopCalendarView
+                      logs={logs}
+                      selectedDate={selectedDate}
+                      onDateSelect={handleDateSelect}
+                      metric="mood"
+                    />
+                  )}
+                </div>
+              </div>
+              {/* Mobile monthly calendar view */}
+              <div className="lg:hidden flex-1 min-h-0">
+                <MobileHistoryGrid
+                  logs={logs}
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                  metric="mood"
+                  viewMode={mobileMode}
+                />
+              </div>
+            </>
+          )}
+
+          {(mobileView === "workout" || mobileView === "alcohol") && (
+            <>
+              <div className="hidden lg:flex lg:h-full lg:flex-1">
+                <div className="flex-1 min-h-0">
+                  {chartView === "grid" ? (
+                    <ActivitiesGrid
+                      logs={logs}
+                      selectedDate={selectedDate}
+                      onDateSelect={handleDateSelect}
+                      activityType={
+                        mobileView === "workout" ? "workout" : "alcohol"
+                      }
+                    />
+                  ) : (
+                    <DesktopCalendarView
+                      logs={logs}
+                      selectedDate={selectedDate}
+                      onDateSelect={handleDateSelect}
+                      metric={mobileView === "workout" ? "workout" : "alcohol"}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="lg:hidden flex-1 min-h-0">
+                <MobileHistoryGrid
+                  logs={logs}
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                  metric={mobileView === "workout" ? "workout" : "alcohol"}
+                  viewMode={mobileMode}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Detail Popup Overlay */}

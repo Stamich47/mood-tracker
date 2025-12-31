@@ -62,13 +62,13 @@ export default function WorkoutLogger({
         >
           {/* Mobile Sliding button */}
           <motion.span
-            animate={{ x: workedOut ? "calc(100% + 6px)" : 0 }}
+            animate={{ x: workedOut ? "calc(100% + 7px)" : 0 }}
             transition={{
               type: "spring",
               stiffness: 250,
               damping: 25,
             }}
-            className={`lg:hidden absolute left-1 h-6 md:h-8 w-8 md:w-10 rounded-lg shadow-md transition-colors duration-300 ${
+            className={`lg:hidden absolute h-6 md:h-8 w-8 md:w-10 rounded-lg shadow-md transition-colors duration-300 ${
               workedOut
                 ? "bg-linear-to-br from-green-400 to-green-500"
                 : "bg-white dark:bg-zinc-100"
