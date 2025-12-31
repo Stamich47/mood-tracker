@@ -6,7 +6,7 @@ DROP FUNCTION IF EXISTS generate_test_data();
 CREATE OR REPLACE FUNCTION generate_test_data()
 RETURNS int AS $$
 DECLARE
-  test_user_id uuid := '0434251e-7bb4-4509-a45b-e1579c99edd4';
+
   inserted_count int;
 BEGIN
   RAISE NOTICE 'Starting data generation for user %', test_user_id;
