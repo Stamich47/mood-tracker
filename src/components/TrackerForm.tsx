@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import MoodSelector from "@/components/MoodSelector";
 import WorkoutLogger from "@/components/WorkoutLogger";
 import DrinkCounter from "@/components/DrinkCounter";
@@ -37,8 +37,7 @@ export default function TrackerForm({
 }: TrackerFormProps) {
   const [mood, setMood] = useState<number | null>(initialData?.mood ?? null);
   const [workedOut, setWorkedOut] = useState(initialData?.worked_out ?? false);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const touchStartRef = useRef<number | null>(null);
   const [exercises, setExercises] = useState<string[]>(
     initialData?.exercises ?? []
   );
@@ -50,18 +49,41 @@ export default function TrackerForm({
   const supabase = createClient();
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
+    const target = e.target as HTMLElement | null;
+    // Ignore touches that originate from inputs/textareas or buttons
+    if (
+      target &&
+      (target.closest("input") ||
+        target.closest("textarea") ||
+        target.closest("button"))
+    ) {
+      touchStartRef.current = null;
+      return;
+    }
+
+    touchStartRef.current = e.targetTouches[0].clientX;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    setTouchEnd(e.changedTouches[0].clientX);
-    handleSwipe();
-  };
+    const target = e.target as HTMLElement | null;
+    if (
+      target &&
+      (target.closest("input") ||
+        target.closest("textarea") ||
+        target.closest("button"))
+    ) {
+      // Don't treat taps inside form controls as swipes
+      touchStartRef.current = null;
+      return;
+    }
 
-  const handleSwipe = () => {
-    if (!touchStart || !touchEnd) return;
+    const start = touchStartRef.current;
+    const end = e.changedTouches[0].clientX;
+    touchStartRef.current = null;
 
-    const distance = touchStart - touchEnd;
+    if (start == null) return;
+
+    const distance = start - end;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
 

@@ -129,35 +129,56 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
 
     if (view === "year") {
       // Aggregate by month
-      const monthlyData: Record<string, { moods: number[], workedOuts: boolean[], drinks: number[] }> = {};
-      
+      const monthlyData: Record<
+        string,
+        { moods: number[]; workedOuts: boolean[]; drinks: number[] }
+      > = {};
+
       periodLogs.forEach((log) => {
         const date = new Date(log.date + "T00:00:00");
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        
+        const monthKey = `${date.getFullYear()}-${String(
+          date.getMonth() + 1
+        ).padStart(2, "0")}`;
+
         if (!monthlyData[monthKey]) {
           monthlyData[monthKey] = { moods: [], workedOuts: [], drinks: [] };
         }
-        
+
         monthlyData[monthKey].moods.push(log.mood);
         monthlyData[monthKey].workedOuts.push(log.worked_out);
         monthlyData[monthKey].drinks.push(log.drinks);
       });
 
-      return Object.entries(monthlyData).map(([monthKey, data]) => {
-        const [year, month] = monthKey.split('-').map(Number);
-        const avgMood = data.moods.length > 0 ? data.moods.reduce((a, b) => a + b, 0) / data.moods.length : 0;
-        const workoutPercentage = data.workedOuts.length > 0 ? (data.workedOuts.filter(Boolean).length / data.workedOuts.length) * 100 : 0;
-        const avgDrinks = data.drinks.length > 0 ? data.drinks.reduce((a, b) => a + b, 0) / data.drinks.length : 0;
-        
-        return {
-          date: `${year}-${month.toString().padStart(2, '0')}-01`, // First day of month
-          mood: Math.round(avgMood * 10) / 10, // Round to 1 decimal
-          worked_out: workoutPercentage, // Percentage for year view
-          drinks: Math.round(avgDrinks * 10) / 10,
-          displayDate: new Date(year, month - 1, 1).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
-        };
-      }).sort((a, b) => a.date.localeCompare(b.date));
+      return Object.entries(monthlyData)
+        .map(([monthKey, data]) => {
+          const [year, month] = monthKey.split("-").map(Number);
+          const avgMood =
+            data.moods.length > 0
+              ? data.moods.reduce((a, b) => a + b, 0) / data.moods.length
+              : 0;
+          const workoutPercentage =
+            data.workedOuts.length > 0
+              ? (data.workedOuts.filter(Boolean).length /
+                  data.workedOuts.length) *
+                100
+              : 0;
+          const avgDrinks =
+            data.drinks.length > 0
+              ? data.drinks.reduce((a, b) => a + b, 0) / data.drinks.length
+              : 0;
+
+          return {
+            date: `${year}-${month.toString().padStart(2, "0")}-01`, // First day of month
+            mood: Math.round(avgMood * 10) / 10, // Round to 1 decimal
+            worked_out: workoutPercentage, // Percentage for year view
+            drinks: Math.round(avgDrinks * 10) / 10,
+            displayDate: new Date(year, month - 1, 1).toLocaleDateString(
+              "en-US",
+              { month: "short", year: "numeric" }
+            ),
+          };
+        })
+        .sort((a, b) => a.date.localeCompare(b.date));
     } else {
       return periodLogs.map((log) => ({
         ...log,
@@ -209,7 +230,11 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
 
     if (view === "year") {
       // For year view, worked_out is average monthly percentage
-      const avgPercentage = filteredData.reduce((acc, curr) => acc + (curr.worked_out as number), 0) / filteredData.length;
+      const avgPercentage =
+        filteredData.reduce(
+          (acc, curr) => acc + (curr.worked_out as number),
+          0
+        ) / filteredData.length;
       return {
         yes: Math.round(avgPercentage),
         no: 0,
