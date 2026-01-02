@@ -5,6 +5,12 @@ import MoodSelector from "@/components/MoodSelector";
 import WorkoutLogger from "@/components/WorkoutLogger";
 import DrinkCounter from "@/components/DrinkCounter";
 import { createClient } from "@/utils/supabase/client";
+import {
+  encryptNote,
+  decryptNote,
+  encryptArray,
+  decryptArray,
+} from "@/utils/encryption";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
@@ -39,10 +45,12 @@ export default function TrackerForm({
   const [workedOut, setWorkedOut] = useState(initialData?.worked_out ?? false);
   const touchStartRef = useRef<number | null>(null);
   const [exercises, setExercises] = useState<string[]>(
-    initialData?.exercises ?? []
+    initialData?.exercises ? decryptArray(initialData.exercises) : []
   );
   const [drinks, setDrinks] = useState(initialData?.drinks ?? 0);
-  const [notes, setNotes] = useState(initialData?.notes ?? "");
+  const [notes, setNotes] = useState(
+    initialData?.notes ? decryptNote(initialData.notes) : ""
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
@@ -114,9 +122,9 @@ export default function TrackerForm({
         date: date,
         mood,
         worked_out: workedOut,
-        exercises,
+        exercises: encryptArray(exercises),
         drinks,
-        notes,
+        notes: encryptNote(notes),
       },
       {
         onConflict: "user_id,date",

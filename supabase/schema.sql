@@ -1,7 +1,7 @@
 -- Create a table for daily logs
 create table public.daily_logs (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users not null,
+  user_id uuid references auth.users on delete cascade not null,
   date date not null default current_date,
   mood integer check (mood >= 1 and mood <= 5),
   worked_out boolean default false,

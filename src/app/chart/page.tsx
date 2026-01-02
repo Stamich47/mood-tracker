@@ -10,6 +10,7 @@ import Navigation from "@/components/Navigation";
 import Modal from "@/components/Modal";
 import TrackerForm from "@/components/TrackerForm";
 import { useSetChart } from "@/contexts/ChartContext";
+import { decryptNote, decryptArray } from "@/utils/encryption";
 import type { Log } from "../../types";
 import { format, parseISO } from "date-fns";
 import { Beer, Dumbbell, Smile, Edit2, Trash2, X } from "lucide-react";
@@ -145,7 +146,7 @@ export default function ChartPage() {
             Analytics
           </p>
           <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
-            Yearly Progress
+            Mood History
           </h1>
         </header>
 
@@ -413,14 +414,16 @@ export default function ChartPage() {
                         {selectedLog.exercises &&
                         selectedLog.exercises.length > 0 ? (
                           <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
-                            {selectedLog.exercises.map((ex, i) => (
-                              <span
-                                key={i}
-                                className="px-2 py-1 bg-white dark:bg-zinc-800 rounded-lg text-[10px] font-bold border border-slate-100 dark:border-zinc-700 shadow-sm"
-                              >
-                                {ex}
-                              </span>
-                            ))}
+                            {decryptArray(selectedLog.exercises).map(
+                              (ex, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-1 bg-white dark:bg-zinc-800 rounded-lg text-[10px] font-bold border border-slate-100 dark:border-zinc-700 shadow-sm"
+                                >
+                                  {ex}
+                                </span>
+                              )
+                            )}
                           </div>
                         ) : (
                           <p className="text-zinc-400 italic text-xs">
@@ -437,7 +440,7 @@ export default function ChartPage() {
                         </p>
                         <div className="p-4 bg-zinc-50 dark:bg-zinc-950/50 rounded-2xl border border-slate-100 dark:border-zinc-800">
                           <p className="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">
-                            {selectedLog.notes}
+                            {decryptNote(selectedLog.notes)}
                           </p>
                         </div>
                       </div>

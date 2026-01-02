@@ -42,8 +42,19 @@ const CustomYAxisTick = (props: CustomYAxisTickProps) => {
 };
 
 export default function InsightsPage({ logs }: { logs: Log[] }) {
-  const [view, setView] = useState<"week" | "month" | "year">("week");
+  const [view, setView] = useState<"week" | "month" | "year" | "custom">(
+    "week"
+  );
   const [offset, setOffset] = useState(0);
+  const [customRange, setCustomRange] = useState<{
+    start: string;
+    end: string;
+  }>({
+    start: new Date(new Date().setDate(new Date().getDate() - 30))
+      .toISOString()
+      .split("T")[0],
+    end: new Date().toISOString().split("T")[0],
+  });
   const [filterOpen, setFilterOpen] = useState(false);
   const [collapsedGraphs, setCollapsedGraphs] = useState<{
     mood: boolean;
@@ -55,7 +66,8 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
 
   const getPeriodLabel = useMemo(() => {
     const now = new Date();
-    const start = new Date();
+    now.setHours(0, 0, 0, 0);
+    const start = new Date(now);
 
     if (view === "week") {
       start.setDate(now.getDate() - 7 + offset * 7);
@@ -75,10 +87,25 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
         month: "long",
         year: "numeric",
       });
-    } else {
+    } else if (view === "year") {
       return `${new Date(now.getFullYear() + offset, 0, 1).getFullYear()}`;
+    } else {
+      return `${new Date(customRange.start + "T00:00:00").toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+        }
+      )} - ${new Date(customRange.end + "T00:00:00").toLocaleDateString(
+        "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }
+      )}`;
     }
-  }, [view, offset]);
+  }, [view, offset, customRange]);
 
   // Update context with current state
   useEffect(() => {
@@ -87,14 +114,18 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
         view,
         offset,
         getPeriodLabel,
-        onViewChange: (v: "week" | "month" | "year") => {
+        onViewChange: (v: "week" | "month" | "year" | "custom") => {
           setView(v);
           setOffset(0);
         },
         onOffsetChange: (o: number) => setOffset(o),
+        customRange,
+        onCustomRangeChange: (start: string, end: string) => {
+          setCustomRange({ start, end });
+        },
       });
     }
-  }, [view, offset, getPeriodLabel, setInsightsControls]);
+  }, [view, offset, getPeriodLabel, setInsightsControls, customRange]);
 
   const toggleGraph = (graph: "mood" | "alcohol" | "exercise") => {
     setCollapsedGraphs((prev) => ({
@@ -105,20 +136,27 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
 
   const filteredData = useMemo(() => {
     const now = new Date();
-    const start = new Date();
+    now.setHours(0, 0, 0, 0);
+    let start = new Date(now);
+    let end = new Date(now);
 
     if (view === "week") {
       start.setDate(now.getDate() - 7 + offset * 7);
+      end = new Date(start);
+      end.setDate(start.getDate() + 7);
     } else if (view === "month") {
       start.setMonth(now.getMonth() + offset, 1);
-    } else {
+      end = new Date(start);
+      end.setMonth(start.getMonth() + 1);
+    } else if (view === "year") {
       start.setFullYear(now.getFullYear() + offset, 0, 1);
+      end = new Date(start);
+      end.setFullYear(start.getFullYear() + 1);
+    } else {
+      start = new Date(customRange.start + "T00:00:00");
+      end = new Date(customRange.end + "T00:00:00");
+      end.setDate(end.getDate() + 1); // Include the end date
     }
-
-    const end = new Date(start);
-    if (view === "week") end.setDate(start.getDate() + 7);
-    else if (view === "month") end.setMonth(start.getMonth() + 1);
-    else end.setFullYear(start.getFullYear() + 1);
 
     const periodLogs = logs
       .filter((log) => {
@@ -192,7 +230,7 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
         ),
       }));
     }
-  }, [logs, view, offset]);
+  }, [logs, view, offset, customRange]);
 
   const averageMood = useMemo(() => {
     if (filteredData.length === 0) return 0;
@@ -200,9 +238,16 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
     return (sum / filteredData.length).toFixed(1);
   }, [filteredData]);
 
+  const averageAlcohol = useMemo(() => {
+    if (filteredData.length === 0) return 0;
+    const sum = filteredData.reduce((acc, curr) => acc + curr.drinks, 0);
+    return (sum / filteredData.length).toFixed(1);
+  }, [filteredData]);
+
   const exerciseStats = useMemo(() => {
     const now = new Date();
-    const start = new Date();
+    now.setHours(0, 0, 0, 0);
+    const start = new Date(now);
     let totalDaysInPeriod = 0;
 
     if (view === "week") {
@@ -215,8 +260,13 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
         monthDate.getMonth() + 1,
         0
       ).getDate();
-    } else {
+    } else if (view === "year") {
       totalDaysInPeriod = 365;
+    } else {
+      const s = new Date(customRange.start + "T00:00:00");
+      const e = new Date(customRange.end + "T00:00:00");
+      totalDaysInPeriod =
+        Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     }
 
     if (filteredData.length === 0) {
@@ -254,7 +304,7 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
       unrecorded: unrecordedCount,
       percentage,
     };
-  }, [filteredData, view, offset]);
+  }, [filteredData, view, offset, customRange]);
 
   return (
     <div className="h-dvh flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 overflow-hidden lg:pt-24">
@@ -310,7 +360,7 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
                     Time Period
                   </p>
                   <div className="flex bg-zinc-100 dark:bg-zinc-800 rounded-2xl p-1 shadow-inner">
-                    {(["week", "month", "year"] as const).map((v) => (
+                    {(["week", "month", "year", "custom"] as const).map((v) => (
                       <button
                         key={v}
                         onClick={() => {
@@ -329,35 +379,80 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
                   </div>
                 </div>
 
-                {/* Date Navigation */}
-                <div>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 tracking-widest uppercase font-semibold mb-3">
-                    Range
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setOffset(offset - 1)}
-                      className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
-                    >
-                      <ChevronLeft
-                        size={18}
-                        className="text-zinc-600 dark:text-zinc-400"
-                      />
-                    </button>
-                    <span className="font-black text-sm tracking-widest flex-1 text-center uppercase text-zinc-600 dark:text-zinc-300">
-                      {getPeriodLabel}
-                    </span>
-                    <button
-                      onClick={() => setOffset(offset + 1)}
-                      className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
-                    >
-                      <ChevronRight
-                        size={18}
-                        className="text-zinc-600 dark:text-zinc-400"
-                      />
-                    </button>
+                {/* Custom Range Inputs for Mobile */}
+                {view === "custom" && (
+                  <div className="flex flex-col gap-4">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 tracking-widest uppercase font-semibold">
+                      Custom Range
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                          Start
+                        </label>
+                        <input
+                          type="date"
+                          value={customRange.start}
+                          onChange={(e) =>
+                            setCustomRange((prev) => ({
+                              ...prev,
+                              start: e.target.value,
+                            }))
+                          }
+                          className="w-full px-3 py-2 text-sm font-bold bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                          End
+                        </label>
+                        <input
+                          type="date"
+                          value={customRange.end}
+                          onChange={(e) =>
+                            setCustomRange((prev) => ({
+                              ...prev,
+                              end: e.target.value,
+                            }))
+                          }
+                          className="w-full px-3 py-2 text-sm font-bold bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Date Navigation */}
+                {view !== "custom" && (
+                  <div>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 tracking-widest uppercase font-semibold mb-3">
+                      Range
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setOffset(offset - 1)}
+                        className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                      >
+                        <ChevronLeft
+                          size={18}
+                          className="text-zinc-600 dark:text-zinc-400"
+                        />
+                      </button>
+                      <span className="font-black text-sm tracking-widest flex-1 text-center uppercase text-zinc-600 dark:text-zinc-300">
+                        {getPeriodLabel}
+                      </span>
+                      <button
+                        onClick={() => setOffset(offset + 1)}
+                        className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+                      >
+                        <ChevronRight
+                          size={18}
+                          className="text-zinc-600 dark:text-zinc-400"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Close Button */}
                 <button
@@ -508,11 +603,24 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
           {/* Alcohol Consumption */}
           <section className="bg-white dark:bg-zinc-900 p-4 md:p-8 rounded-4xl shadow-lg border border-slate-100 dark:border-zinc-800">
             <div className="flex items-center justify-between gap-3 mb-8">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-1">
                 <div className="w-1.5 h-6 bg-amber-500 rounded-full" />
-                <h2 className="text-xl font-black tracking-tight">
-                  Alcohol Intake
-                </h2>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h2 className="text-xl font-black tracking-tight">
+                      Alcohol Intake
+                    </h2>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-900/30">
+                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                      <span className="text-[10px] font-black tracking-widest text-amber-700 dark:text-amber-300 uppercase">
+                        AVG: {averageAlcohol}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 tracking-wide uppercase font-semibold mt-0.5">
+                    {getPeriodLabel}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => toggleGraph("alcohol")}
@@ -593,11 +701,24 @@ export default function InsightsPage({ logs }: { logs: Log[] }) {
           {/* Exercise Activity */}
           <section className="bg-white dark:bg-zinc-900 p-4 md:p-8 rounded-4xl shadow-lg border border-slate-100 dark:border-zinc-800">
             <div className="flex items-center justify-between gap-3 mb-8">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-1">
                 <div className="w-1.5 h-6 bg-emerald-500 rounded-full" />
-                <h2 className="text-xl font-black tracking-tight">
-                  Exercise Activity
-                </h2>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h2 className="text-xl font-black tracking-tight">
+                      Exercise Activity
+                    </h2>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-100 dark:border-emerald-900/30">
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                      <span className="text-[10px] font-black tracking-widest text-emerald-700 dark:text-emerald-300 uppercase">
+                        {exerciseStats.percentage}% ACTIVE
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 tracking-wide uppercase font-semibold mt-0.5">
+                    {getPeriodLabel}
+                  </p>
+                </div>
               </div>
               <button
                 onClick={() => toggleGraph("exercise")}

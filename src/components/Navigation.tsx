@@ -98,7 +98,7 @@ export default function Navigation() {
           <div className="flex items-center gap-4">
             {/* View Toggle */}
             <div className="flex bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1 shadow-inner">
-              {(["week", "month", "year"] as const).map((v) => (
+              {(["week", "month", "year", "custom"] as const).map((v) => (
                 <button
                   key={v}
                   onClick={() => insightsControls.onViewChange(v)}
@@ -113,34 +113,62 @@ export default function Navigation() {
               ))}
             </div>
 
-            {/* Date Navigation */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() =>
-                  insightsControls.onOffsetChange(insightsControls.offset - 1)
-                }
-                className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shrink-0"
-              >
-                <ChevronLeft
-                  size={14}
-                  className="text-zinc-600 dark:text-zinc-400"
+            {/* Date Navigation or Custom Range */}
+            {insightsControls.view === "custom" ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={insightsControls.customRange?.start}
+                  onChange={(e) =>
+                    insightsControls.onCustomRangeChange?.(
+                      e.target.value,
+                      insightsControls.customRange?.end || ""
+                    )
+                  }
+                  className="px-2 py-1 text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                 />
-              </button>
-              <span className="font-black text-xs tracking-widest flex-1 text-center uppercase text-zinc-500 min-w-50">
-                {insightsControls.getPeriodLabel}
-              </span>
-              <button
-                onClick={() =>
-                  insightsControls.onOffsetChange(insightsControls.offset + 1)
-                }
-                className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shrink-0"
-              >
-                <ChevronRight
-                  size={14}
-                  className="text-zinc-600 dark:text-zinc-400"
+                <span className="text-[10px] font-bold text-zinc-400">TO</span>
+                <input
+                  type="date"
+                  value={insightsControls.customRange?.end}
+                  onChange={(e) =>
+                    insightsControls.onCustomRangeChange?.(
+                      insightsControls.customRange?.start || "",
+                      e.target.value
+                    )
+                  }
+                  className="px-2 py-1 text-[10px] font-bold bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                 />
-              </button>
-            </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() =>
+                    insightsControls.onOffsetChange(insightsControls.offset - 1)
+                  }
+                  className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shrink-0"
+                >
+                  <ChevronLeft
+                    size={14}
+                    className="text-zinc-600 dark:text-zinc-400"
+                  />
+                </button>
+                <span className="font-black text-xs tracking-widest flex-1 text-center uppercase text-zinc-500 min-w-50">
+                  {insightsControls.getPeriodLabel}
+                </span>
+                <button
+                  onClick={() =>
+                    insightsControls.onOffsetChange(insightsControls.offset + 1)
+                  }
+                  className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-slate-100 dark:border-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all shrink-0"
+                >
+                  <ChevronRight
+                    size={14}
+                    className="text-zinc-600 dark:text-zinc-400"
+                  />
+                </button>
+              </div>
+            )}
           </div>
         )}
 

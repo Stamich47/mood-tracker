@@ -9,11 +9,13 @@ import {
 } from "react";
 
 interface InsightsContextType {
-  view: "week" | "month" | "year";
+  view: "week" | "month" | "year" | "custom";
   offset: number;
   getPeriodLabel: string;
-  onViewChange: (view: "week" | "month" | "year") => void;
+  onViewChange: (view: "week" | "month" | "year" | "custom") => void;
   onOffsetChange: (offset: number) => void;
+  customRange?: { start: string; end: string };
+  onCustomRangeChange?: (start: string, end: string) => void;
 }
 
 const InsightsContext = createContext<InsightsContextType | undefined>(
