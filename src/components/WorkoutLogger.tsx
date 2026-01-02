@@ -137,7 +137,7 @@ export default function WorkoutLogger({
               </div>
 
               {exercises.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
                   {exercises.map((ex, i) => (
                     <motion.span
                       key={i}

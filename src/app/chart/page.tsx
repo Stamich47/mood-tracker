@@ -12,7 +12,7 @@ import TrackerForm from "@/components/TrackerForm";
 import { useSetChart } from "@/contexts/ChartContext";
 import type { Log } from "../../types";
 import { format, parseISO } from "date-fns";
-import { Beer, Dumbbell, Smile, Edit2, Trash2 } from "lucide-react";
+import { Beer, Dumbbell, Smile, Edit2, Trash2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const moodColors: Record<number, string> = {
@@ -337,6 +337,12 @@ export default function ChartPage() {
                         <Trash2 size={18} />
                       </button>
                     )}
+                    <button
+                      onClick={() => setIsDetailPopupOpen(false)}
+                      className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-xl text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+                    >
+                      <X size={18} />
+                    </button>
                   </div>
                 </div>
 
@@ -406,7 +412,7 @@ export default function ChartPage() {
                       <div className="p-4 bg-zinc-50 dark:bg-zinc-950/50 rounded-2xl border border-slate-100 dark:border-zinc-800 min-h-20">
                         {selectedLog.exercises &&
                         selectedLog.exercises.length > 0 ? (
-                          <div className="flex flex-wrap gap-1.5">
+                          <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
                             {selectedLog.exercises.map((ex, i) => (
                               <span
                                 key={i}
